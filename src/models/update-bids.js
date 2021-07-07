@@ -1,31 +1,42 @@
 const { connectionString } = require('./config.js')
-const punkFeed = require("../loaders/punk-feed")
 const { MongoClient } = require("mongodb");
 
-const main = async () => {
+const updateDatabase = async (event, isBid) => {
 
-    console.log(bidEvent)
+    console.log(connectionString)
     
-    const uri = connectionString
+    const uri = "mongodb+srv://richard-melko:q7dz5fPhdBrTjFwl@cluster0.zzn2y.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
     const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     });
 
-    try {
-        await client.connect();
-        console.log(client);
-        await createListing(client, )       
-    } finally {
-        await client.close();
-    }
+    if(isBid){
+        try {
+            await client.connect();
+            await createBidListing(client, event)      
+        } finally {
+            await client.close();
+        }
+    } else {
+        try {
+            await client.connect();
+            await createBoughtListing(client, event)      
+        } finally {
+            await client.close();
+        }
+    } 
 }
 
-const createListing = async (client, newListing) => {
+const createBidListing = async (client, newListing) => {
     const result = await client.db("cryptopunks-tests").collection("bids").insertOne(newListing);
-
-    console.log(`New listing created with id : ${result.insertedId}`)
+    console.log(`New Bid listing created with id : ${result.insertedId}`)
 }
 
-main().catch(console.dir);
+const createBoughtListing = async (client, newListing) => {
+    const result = await client.db("cryptopunks-tests").collection("buys").insertOne(newListing);
+    console.log(`New Bought listing created with id : ${result.insertedId}`)
+}
+
+module.exports = { updateDatabase }
