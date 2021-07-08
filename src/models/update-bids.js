@@ -29,7 +29,7 @@ const updateDatabase = async (event, isBid) => {
     } 
 }
 
-const getHighestBidder = async () => {
+const getHighestBidder = async (bought) => {
 
     console.log('\n ***** Getting Highest Bidder! ***** \n')
 
@@ -40,20 +40,28 @@ const getHighestBidder = async () => {
 
     try {
         await client.connect();
-        await findByPunkIndex(client)           
+        await createBoughtListing(client, bought);
+        await findLastBid(client, bought)           
     } finally {
         await client.close();
     }
 }
 
-const findByPunkIndex = async (client) => {
+const findLastBid = async (client, bought) => {
 
     let resultCursor = await client.db("cryptopunks-tests").collection("bids").find().limit(1).sort({$natural:-1});
-    let result = await resultCursor.toArray();
-    console.log('RESULT >>>>>> ', result)
+    let result = await resultCursor.toArray(); 
+    if(result[0].punkIndex === bought.punkIndex){
+        console.log('\n+++++++++', result, bought, 'punkIndex should be the same ++++++++\n')
+        await updateListingbyTimestamp(client, bought.timestamp, result[0].value, result[0].usdQuote);
+    } 
+}
 
-    // update buy document val 0 with result.value
-    
+const updateListingbyTimestamp = async (client, timestamp, value, quote) => {
+    const newUSDValue = value * quote;
+    await client.db("cryptopunks-tests").collection("buys").updateOne({ "timestamp" : timestamp }, {$set: {"value": value}});
+    await client.db("cryptopunks-tests").collection("buys").updateOne({ "timestamp" : timestamp }, {$set: {"usdValue": newUSDValue}});
+    console.log(`\n updated bought with ${timestamp} timestamp to correct val \n`)
 }
 
 const createBidListing = async (client, newListing) => {
