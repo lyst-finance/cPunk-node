@@ -1,10 +1,12 @@
 const { connectionString } = require('./config.js');
 const { MongoClient } = require("mongodb");
 
-const uri = "mongodb+srv://richard-melko:q7dz5fPhdBrTjFwl@cluster0.zzn2y.mongodb.net/cryptopunks-tests?retryWrites=true&w=majority"
+
 let client;
 
 const updateDatabase = async (event, isBid) => {
+
+    const uri = process.env.CONNECTION_STRING
 
     client = new MongoClient(uri, {
         useNewUrlParser: true,
@@ -23,12 +25,14 @@ const updateDatabase = async (event, isBid) => {
             await client.connect();
             await createBoughtListing(client, event)
         } finally {
-            await client.close();     
+            //await client.close();     
         }
     }  
 }
 
 const getHighestBidder = async (bought) => {
+
+    const uri = process.env.CONNECTION_STRING
 
     console.log('\n ***** Getting Highest Bidder! ***** \n')
 
@@ -42,11 +46,13 @@ const getHighestBidder = async (bought) => {
         await createBoughtListing(client, bought);
         await findLastBid(client, bought)           
     } finally {
-        await client.close();
+        // await client.close 
     }
 }
 
 const getBoughtData = async () => {
+
+    const uri = process.env.CONNECTION_STRING
 
     let response;
 
@@ -60,7 +66,7 @@ const getBoughtData = async () => {
         let resultCursor = await client.db("cPunk-prototype").collection("buys").find({});
         response = await resultCursor.toArray();
     } finally {
-        await client.close();
+        //await client.close();
     }
     return response
 }

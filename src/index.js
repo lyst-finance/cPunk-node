@@ -1,9 +1,10 @@
 const FeedManager = require('./subscribers/feedManager');
 const DatabaseService = require('./services/databaseService');
 const punkFeed = require('./subscribers/punk-feed');
-const punkFeedTestnet = require('./subscribers/punk-feed-testnet')
 const express = require('express');
 const app = express();
+const dotenv = require('dotenv');
+dotenv.config();
 
 const feedManager = new FeedManager;
 const databaseService = new DatabaseService;
@@ -27,10 +28,6 @@ const main = async () => {
         console.log('INDEX >>>', cPunkIndex);
         databaseService.saveIndex(cPunkIndex);  
     });
-    
-    const cPunkIndex = await databaseService.runTensorflow();
-    console.log('INDEX >>>', cPunkIndex)
-    databaseService.saveIndex(cPunkIndex)
 
     await punkFeed.logBought(feedManager);
     await punkFeed.logBidEntered(feedManager)    
