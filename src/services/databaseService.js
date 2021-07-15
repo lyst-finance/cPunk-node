@@ -1,5 +1,5 @@
-const { updateDatabase, getHighestBidder } = require('../models/update-bids')
-
+const { updateDatabase, getHighestBidder, getBoughtData } = require('../models/update-bids')
+const { runModel } = require('./index-model')
 class DatabaseService {
     
     saveBid(bid, timestamp) {
@@ -36,8 +36,12 @@ class DatabaseService {
             getHighestBidder(bought)
         } else {
             updateDatabase(bought, false)
-        }
-         
+        }      
+    }
+
+    async runTensorflow(){
+        const result = await getBoughtData();
+        return await runModel(result);
     }
 }
 

@@ -1,11 +1,11 @@
 const hre = require("hardhat");
 const ethers = require('ethers');
 const axios = require('axios')
-const cryptoPunksMarket_mainnet_ABI = require('../abis/cryptoPunksMarket_mainnet_ABI.json')
+const cryptoPunksMarket_rinkby_ABI = require('../abis/cryptoPunksMarket_rinkby_ABI.json')
 
-const address = "0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB";
-const provider = new ethers.providers.WebSocketProvider("wss://eth-mainnet.ws.alchemyapi.io/v2/gRR0KK-rRxTfSUdGd_g11RvpjrgCRN8a");
-const contract = new ethers.Contract(address, cryptoPunksMarket_mainnet_ABI, provider);
+const address = "0x7BA86a8216b2fD5B3F2A959B692486927482f6AE";
+const provider = new ethers.providers.WebSocketProvider("wss://eth-rinkeby.alchemyapi.io/v2/Oq7yS7NdZbdW-beaojb1-8CuN_mjBpFc");
+const contract = new ethers.Contract(address, cryptoPunksMarket_rinkby_ABI, provider);
 
 const logBidEntered = async (feedManager) => {
 

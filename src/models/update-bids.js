@@ -1,8 +1,7 @@
-const { connectionString } = require('./config.js')
+const { connectionString } = require('./config.js');
 const { MongoClient } = require("mongodb");
-const { DepthwiseConv2dNativeBackpropFilter } = require('@tensorflow/tfjs');
 
-const uri = "mongodb+srv://richard-melko:q7dz5fPhdBrTjFwl@cluster0.zzn2y.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+const uri = "mongodb+srv://richard-melko:q7dz5fPhdBrTjFwl@cluster0.zzn2y.mongodb.net/cryptopunks-tests?retryWrites=true&w=majority"
 let client;
 
 const updateDatabase = async (event, isBid) => {
@@ -15,18 +14,18 @@ const updateDatabase = async (event, isBid) => {
     if(isBid){
         try {
             await client.connect();
-            await createBidListing(client, event)      
+            await createBidListing(client, event)
         } finally {
             await client.close();
         }
     } else {
         try {
             await client.connect();
-            await createBoughtListing(client, event)      
+            await createBoughtListing(client, event)
         } finally {
-            await client.close();
+            await client.close();     
         }
-    } 
+    }  
 }
 
 const getHighestBidder = async (bought) => {
@@ -45,6 +44,25 @@ const getHighestBidder = async (bought) => {
     } finally {
         await client.close();
     }
+}
+
+const getBoughtData = async () => {
+
+    let response;
+
+    client = new MongoClient(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        });
+
+    try {
+        await client.connect();    
+        let resultCursor = await client.db("cryptopunks-dummy").collection("buys").find({});
+        response = await resultCursor.toArray();
+    } finally {
+        await client.close();
+    }
+    return response
 }
 
 const findLastBid = async (client, bought) => {
@@ -74,10 +92,8 @@ const createBoughtListing = async (client, newListing) => {
     console.log(`New Bought listing created with id : ${result.insertedId}`)
 }
 
-const mapAttributeAndType = async() => {
-    
-}
 
 
 
-module.exports = { updateDatabase, getHighestBidder }
+
+module.exports = { updateDatabase, getHighestBidder, getBoughtData }

@@ -1,14 +1,18 @@
 const tf = require('@tensorflow/tfjs-node')
 
 let points;
+let indexValues = [];
 
-    async function run () {
-        
-        //Import CSV
-        const punkBoughtData = tf.data.csv("http://127.0.0.1:8080/bought-data.csv");
+    async function runModel (punkData) {
+
+        //turn all string vals to nums 
+        punkData.forEach(event => {
+            event.priceInUSD = parseInt(event.priceInUSD)
+            event.timestamp = parseInt(event.timestamp)
+        })
 
         //Extract x and y vals to plot
-        const filteredData = punkBoughtData.filter(record => {
+        const filteredData = punkData.filter(record => {
             if(record.priceInUSD < 200000 && record.priceInUSD > 100){
                  if(record.timestamp > 1609459200 && record.timestamp < 1624492800){ 
                     return record
@@ -16,13 +20,10 @@ let points;
             }
         });
 
-        const pointsDataset = filteredData.map(record => ({
+        const points = filteredData.map(record => ({
                 x : record.timestamp,
                 y : record.priceInUSD,
-                class: record.count
             }))
-
-        points = await pointsDataset.toArray();
         
         if(points.length % 2 !== 0) { // If odd number of elements
             points.pop(); // remove one element
@@ -88,9 +89,9 @@ let points;
             
             //output layer with one node
             model.add(tf.layers.dense({
-                units: 1, //number of nodes in layer
-                useBias: true, //adds a bias parameter 
-                activation: 'tanh', //activation function
+                units: 1, 
+                useBias: true, 
+                activation: 'tanh', 
             }));
 
             const optimizer = tf.train.adamax(0.01); //parameter = learning rate
@@ -107,16 +108,34 @@ let points;
 
             return model.fit(trainingFeatureTensor, trainingLabelTensor, {
                 batchSize: 100,
-                epochs: 500,
+                epochs: 10,
                 validationSplit : 0.2,
                 callbacks: {
                     //onEpochEnd,
                     onEpochBegin : async function () {
-                        epochCount ++;
-                        console.log(`Epoch Count :  ${epochCount}`)              
+                        await plotPredictionLine();              
                     }
                 }
             });
+        }
+
+        async function plotPredictionLine () {
+
+            const [xs, ys] = tf.tidy(() => {
+                const normalisedXs = tf.linspace(0, 1, 100);
+                const normalisedYs = model.predict(normalisedXs.reshape([100, 1]));
+
+                const xs = denormalise(normalisedXs, normalisedFeature.min, normalisedFeature.max);
+                const ys = denormalise(normalisedYs, normalisedLabel.min, normalisedLabel.max);
+
+                return [ xs.dataSync(), ys.dataSync() ]
+                });
+
+            const predictedPoints = Array.from(xs).map((val, index) => {
+                return { x: val, y: ys[index] }
+            });
+
+            indexValues.push(predictedPoints);
         }
 
         const normalisedFeature = normalise(featureTensor);
@@ -127,10 +146,11 @@ let points;
         const [trainingFeatureTensor, testingFeatureTensor] = tf.split(normalisedFeature.tensor, 2);
         const [trainingLabelTensor, testingLabelTensor] = tf.split(normalisedLabel.tensor, 2);
         
-        let epochCount = 0;
         const model = createModel(); //initialise model with a function above    
 
         const result = await trainModel(model, trainingFeatureTensor, trainingLabelTensor);
+
+        await model.save('file://./services/punk-index-model');
         
         const trainingLoss = result.history.loss.pop();
         console.log(`Training set loss: ${trainingLoss}`);
@@ -140,8 +160,17 @@ let points;
 
         const lossTensor = model.evaluate(testingFeatureTensor, testingLabelTensor);
         const loss = await lossTensor.dataSync();
-        console.log(`Testing set loss: ${loss}`); 
+        console.log(`Testing set loss: ${loss}`);  
+
+        indexValues = [].concat.apply([], indexValues); //flattens 2D array
+        
+        indexValues.forEach(point => {
+            console.log(point.y)
+            point.y = point.y / 100
+        })
+        
+        return indexValues
 
     }
 
-    run();
+    module.exports = { runModel }
