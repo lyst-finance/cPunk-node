@@ -65,7 +65,7 @@ let indexValues = [];
             model.add(tf.layers.dense({
                 units: 5, //number of nodes in layer
                 useBias: true, //adds a bias parameter 
-                activation: 'sigmoid', //try switching to tanh for an interesting result
+                activation: 'sigmoid', //activation function
                 inputDim: 1,
                 weights: [ tf.randomNormal([1, 5], -10, 0),  tf.randomNormal([5], 0, 10)]
                 
@@ -82,7 +82,7 @@ let indexValues = [];
             model.add(tf.layers.dense({
                 units: 50, 
                 useBias: true,  
-                activation: 'sigmoid', //activation function
+                activation: 'sigmoid', 
                 weights: [ tf.randomNormal([50, 50], 0, 3.2),  tf.randomUniform([50], -6, 1)]
                 
             }));
@@ -108,7 +108,7 @@ let indexValues = [];
 
             return model.fit(trainingFeatureTensor, trainingLabelTensor, {
                 batchSize: 100,
-                epochs: 10,
+                epochs: 500,
                 validationSplit : 0.2,
                 callbacks: {
                     //onEpochEnd,

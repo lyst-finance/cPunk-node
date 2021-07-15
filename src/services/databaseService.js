@@ -1,4 +1,5 @@
 const { updateDatabase, getHighestBidder, getBoughtData } = require('../models/update-bids')
+const { updateIndex } = require('../models/quotes.js')
 const { runModel } = require('./index-model')
 class DatabaseService {
     
@@ -6,8 +7,8 @@ class DatabaseService {
         console.log(`Running query: 
         BID PunkIndex :${bid.punkIndex} \n
         BID value :(${bid.value} \n
-        BID usdValue :(${bid.usdValue} \n
-        BID usdQuote :(${bid.usdQuote} \n        
+        BID usdValue :${bid.usdValue} \n
+        BID usdQuote :${bid.usdQuote} \n        
         BID fromAddress :${bid.fromAddress} \n
         BID blockNumber :${bid.blockNumber} \n           
         TIMESTAMP : ${timestamp}`)
@@ -18,12 +19,12 @@ class DatabaseService {
         updateDatabase(bid, true);
     }
 
-    saveBought(bought, timestamp){
+    async saveBought(bought, timestamp){
         console.log(`Running query: 
         BOUGHT PunkID :${bought.punkIndex} \n
         BOUGHT value :${bought.value} \n
         BOUGHT usdValue :${bought.usdValue} \n
-        BOUGHT usdQuote :(${bought.usdQuote} \n 
+        BOUGHT usdQuote :${bought.usdQuote} \n 
         BOUGHT toAddress :${bought.toAddress} \n    
         BOUGHT fromAddress :${bought.fromAddress} \n
         BOUGHT blockNumber :${bought.blockNumber} \n           
@@ -42,6 +43,16 @@ class DatabaseService {
     async runTensorflow(){
         const result = await getBoughtData();
         return await runModel(result);
+    }
+
+    saveIndex(cPunkArray){
+        
+        const cPunkIndex = {
+            timestamp : Date.now(),
+            cPunkIndex : cPunkArray
+        }
+        
+        updateIndex(cPunkIndex)
     }
 }
 

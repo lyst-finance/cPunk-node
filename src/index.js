@@ -22,13 +22,15 @@ const main = async () => {
     });
     
     feedManager.on('Punk_Bought', async (bought, timestamp) => {
-        databaseService.saveBought(bought, timestamp);
+        await databaseService.saveBought(bought, timestamp);
         const cPunkIndex = await databaseService.runTensorflow();
-        console.log('INDEX >>>', cPunkIndex)  
+        console.log('INDEX >>>', cPunkIndex);
+        databaseService.saveIndex(cPunkIndex);  
     });
     
-    // const cPunkIndex = await databaseService.runTensorflow();
-    // console.log('INDEX >>>', cPunkIndex)
+    const cPunkIndex = await databaseService.runTensorflow();
+    console.log('INDEX >>>', cPunkIndex)
+    databaseService.saveIndex(cPunkIndex)
 
     await punkFeed.logBought(feedManager);
     await punkFeed.logBidEntered(feedManager)    

@@ -57,7 +57,7 @@ const getBoughtData = async () => {
 
     try {
         await client.connect();    
-        let resultCursor = await client.db("cryptopunks-dummy").collection("buys").find({});
+        let resultCursor = await client.db("cPunk-prototype").collection("buys").find({});
         response = await resultCursor.toArray();
     } finally {
         await client.close();
@@ -67,7 +67,7 @@ const getBoughtData = async () => {
 
 const findLastBid = async (client, bought) => {
 
-    let resultCursor = await client.db("cryptopunk-mainnet-test").collection("bids").find().limit(1).sort({$natural:-1});
+    let resultCursor = await client.db("cPunk-prototype").collection("bids").find().limit(1).sort({$natural:-1});
     let result = await resultCursor.toArray(); 
     if(result[0].punkIndex === bought.punkIndex){
         console.log('\n+++++++++', result, bought, 'punkIndex should be the same ++++++++\n')
@@ -77,23 +77,19 @@ const findLastBid = async (client, bought) => {
 
 const updateListingbyTimestamp = async (client, timestamp, value, quote) => {
     const newUSDValue = value * quote;
-    await client.db("cryptopunk-mainnet-test").collection("buys").updateOne({ "timestamp" : timestamp }, {$set: {"value": value}});
-    await client.db("cryptopunk-mainnet-test").collection("buys").updateOne({ "timestamp" : timestamp }, {$set: {"usdValue": newUSDValue}});
+    await client.db("cPunk-prototype").collection("buys").updateOne({ "timestamp" : timestamp }, {$set: {"value": value}});
+    await client.db("cPunk-prototype").collection("buys").updateOne({ "timestamp" : timestamp }, {$set: {"usdValue": newUSDValue}});
     console.log(`\n updated bought with ${timestamp} timestamp to correct val \n`)
 }
 
 const createBidListing = async (client, newListing) => {
-    const result = await client.db("cryptopunk-mainnet-test").collection("bids").insertOne(newListing);
+    const result = await client.db("cPunk-prototype").collection("bids").insertOne(newListing);
     console.log(`New Bid listing created with id : ${result.insertedId}`)
 }
 
 const createBoughtListing = async (client, newListing) => {
-    const result = await client.db("cryptopunk-mainnet-test").collection("buys").insertOne(newListing);
+    const result = await client.db("cPunk-prototype").collection("buys").insertOne(newListing);
     console.log(`New Bought listing created with id : ${result.insertedId}`)
 }
-
-
-
-
 
 module.exports = { updateDatabase, getHighestBidder, getBoughtData }
