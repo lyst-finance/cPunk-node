@@ -5,13 +5,13 @@ class DatabaseService {
     
     saveBid(bid, timestamp) {
         console.log(`Running query: 
-        BID PunkIndex :${bid.punkIndex} \n
-        BID value :(${bid.value} \n
-        BID usdValue :${bid.usdValue} \n
-        BID usdQuote :${bid.usdQuote} \n        
-        BID fromAddress :${bid.fromAddress} \n
-        BID blockNumber :${bid.blockNumber} \n           
-        TIMESTAMP : ${timestamp}`)
+        BID PunkIndex : ${bid.punkIndex} \n
+        BID value : ${bid.value} \n
+        BID usdValue : ${bid.usdValue} \n
+        BID usdQuote : ${bid.usdQuote} \n        
+        BID fromAddress : ${bid.fromAddress} \n
+        BID blockNumber : ${bid.blockNumber} \n           
+        TIMESTAMP : ${timestamp} \n`)
 
         bid.timestamp = timestamp;
         bid.eventType = 'bid'
@@ -21,14 +21,14 @@ class DatabaseService {
 
     async saveBought(bought, timestamp){
         console.log(`Running query: 
-        BOUGHT PunkID :${bought.punkIndex} \n
-        BOUGHT value :${bought.value} \n
-        BOUGHT usdValue :${bought.usdValue} \n
-        BOUGHT usdQuote :${bought.usdQuote} \n 
-        BOUGHT toAddress :${bought.toAddress} \n    
+        BOUGHT PunkID : ${bought.punkIndex} \n
+        BOUGHT value : ${bought.value} \n
+        BOUGHT usdValue : ${bought.usdValue} \n
+        BOUGHT usdQuote : ${bought.usdQuote} \n 
+        BOUGHT toAddress : ${bought.toAddress} \n    
         BOUGHT fromAddress :${bought.fromAddress} \n
         BOUGHT blockNumber :${bought.blockNumber} \n           
-        TIMESTAMP :    ${timestamp}`)
+        TIMESTAMP : ${timestamp} \n`)
 
         bought.timestamp = timestamp;
         bought.eventType = 'bought'

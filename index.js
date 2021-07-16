@@ -1,6 +1,6 @@
-const FeedManager = require('./subscribers/feedManager');
-const DatabaseService = require('./services/databaseService');
-const punkFeed = require('./subscribers/punk-feed');
+const FeedManager = require('./src/subscribers/feedManager');
+const DatabaseService = require('./src/services/databaseService');
+const punkFeed = require('./src/subscribers/punk-feed');
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
@@ -10,12 +10,15 @@ const feedManager = new FeedManager;
 const databaseService = new DatabaseService;
 
 const main = async () => {
-
+    
+    const port = process.env.PORT || 3000
+    cors = require('cors');
+    app.use(cors());
     app.use(express.json())
 
-    app.listen(3000, () => console.log('server has started'));
-
-    const quotesRouter = require('./api/quotes')
+    app.listen(port, () => console.log('server has started'));
+    
+    const quotesRouter = require('./src/api/quotes')
     app.use('/quote', quotesRouter)
     
     feedManager.on("Punk_Bid_Entered", (bid, timestamp) => {

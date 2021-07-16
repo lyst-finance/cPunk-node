@@ -1,8 +1,5 @@
 const tf = require('@tensorflow/tfjs-node')
 
-let points;
-let indexValues = [];
-
     async function runModel (punkData) {
 
         //turn all string vals to nums 
@@ -14,7 +11,7 @@ let indexValues = [];
         //Extract x and y vals to plot
         const filteredData = punkData.filter(record => {
             if(record.priceInUSD < 200000 && record.priceInUSD > 100){
-                 if(record.timestamp > 1609459200 && record.timestamp < 1624492800){ 
+                 if(record.timestamp > 1609459200 ){ 
                     return record
                  }
             }
@@ -120,6 +117,7 @@ let indexValues = [];
         }
 
         async function plotPredictionLine () {
+            let indexValues = [];
 
             const [xs, ys] = tf.tidy(() => {
                 const normalisedXs = tf.linspace(0, 1, 100);
@@ -136,6 +134,7 @@ let indexValues = [];
             });
 
             indexValues.push(predictedPoints);
+            return indexValues
         }
 
         const normalisedFeature = normalise(featureTensor);
@@ -160,16 +159,19 @@ let indexValues = [];
 
         const lossTensor = model.evaluate(testingFeatureTensor, testingLabelTensor);
         const loss = await lossTensor.dataSync();
-        console.log(`Testing set loss: ${loss}`);  
-
-        indexValues = [].concat.apply([], indexValues); //flattens 2D array
+        console.log(`Testing set loss: ${loss}`);
         
-        indexValues.forEach(point => {
+        let index = await plotPredictionLine();
+        console.log('INDEXXXX', index);
+
+        index = [].concat.apply([], index); //flattens 2D array
+        
+        index.forEach(point => {
             console.log(point.y)
             point.y = point.y / 100
         })
         
-        return indexValues
+        return index
 
     }
 

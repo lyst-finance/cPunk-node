@@ -18,7 +18,7 @@ const updateDatabase = async (event, isBid) => {
             await client.connect();
             await createBidListing(client, event)
         } finally {
-            await client.close();
+            // await client.close();
         }
     } else {
         try {
