@@ -1,4 +1,5 @@
-const tf = require('@tensorflow/tfjs-node')
+const tf = require('@tensorflow/tfjs-node');
+const ma = require('moving-averages');
 
     async function runModel (punkData) {
 
@@ -165,11 +166,21 @@ const tf = require('@tensorflow/tfjs-node')
         console.log('INDEXXXX', index);
 
         index = [].concat.apply([], index); //flattens 2D array
+
+        let maData = [];
         
         index.forEach(point => {
-            console.log(point.y)
             point.y = point.y / 100
-        })
+            maData.push(point.y);
+        });
+
+        const movingAverage = ma.ma(maData, 2);
+
+        index.forEach((point, i) => {
+            point.y = movingAverage[i];
+        });
+
+        console.log(index, movingAverage)
         
         return index
 

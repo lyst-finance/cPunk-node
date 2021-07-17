@@ -1,7 +1,7 @@
 const { connectionString } = require('./config.js')
 const { MongoClient } = require("mongodb");
 
-const uri = "mongodb+srv://richard-melko:q7dz5fPhdBrTjFwl@cluster0.zzn2y.mongodb.net/cryptopunks-tests?retryWrites=true&w=majority"
+const uri = process.env.MONGODB_URI;
 let client;
 
 const getData = async () => {

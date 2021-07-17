@@ -6,7 +6,7 @@ let client;
 
 const updateDatabase = async (event, isBid) => {
 
-    const uri = process.env.CONNECTION_STRING
+    const uri = process.env.MONGODB_URI
 
     client = new MongoClient(uri, {
         useNewUrlParser: true,
@@ -32,7 +32,7 @@ const updateDatabase = async (event, isBid) => {
 
 const getHighestBidder = async (bought) => {
 
-    const uri = process.env.CONNECTION_STRING
+    const uri = process.env.MONGODB_URI
 
     console.log('\n ***** Getting Highest Bidder! ***** \n')
 
@@ -52,7 +52,7 @@ const getHighestBidder = async (bought) => {
 
 const getBoughtData = async () => {
 
-    const uri = process.env.CONNECTION_STRING
+    const uri = process.env.MONGODB_URI
 
     let response;
 

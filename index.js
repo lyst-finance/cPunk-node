@@ -1,20 +1,22 @@
 const FeedManager = require('./src/subscribers/feedManager');
 const DatabaseService = require('./src/services/databaseService');
 const punkFeed = require('./src/subscribers/punk-feed');
+const WebSocket = require('ws');
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
 
+const wss = new WebSocket.Server({ server });
+const port = process.env.PORT || 3000
+cors = require('cors');
+app.use(cors());
+app.use(express.json());
+
 const feedManager = new FeedManager;
 const databaseService = new DatabaseService;
 
 const main = async () => {
-    
-    const port = process.env.PORT || 3000
-    cors = require('cors');
-    app.use(cors());
-    app.use(express.json())
 
     app.listen(port, () => console.log('server has started'));
     

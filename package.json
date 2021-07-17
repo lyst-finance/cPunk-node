@@ -3,6 +3,9 @@
   "devDependencies": {
     "hardhat": "^2.4.1"
   },
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "@tensorflow/tfjs": "^3.7.0",
     "@tensorflow/tfjs-node": "^3.7.0",
@@ -12,8 +15,10 @@
     "express": "^4.17.1",
     "mongodb": "^3.6.10",
     "mongoose": "^5.13.2",
+    "moving-averages": "^4.0.6",
     "nedb": "^1.8.0",
     "node-fetch": "^2.6.1",
-    "nodemon": "^2.0.12"
+    "nodemon": "^2.0.12",
+    "ws": "^7.5.3"
   }
 }
