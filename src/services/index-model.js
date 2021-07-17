@@ -150,7 +150,7 @@ const ma = require('moving-averages');
 
         const result = await trainModel(model, trainingFeatureTensor, trainingLabelTensor);
 
-        await model.save('file://./services/punk-index-model');
+        //await model.save('file://./services/punk-index-model');
         
         const trainingLoss = result.history.loss.pop();
         console.log(`Training set loss: ${trainingLoss}`);
