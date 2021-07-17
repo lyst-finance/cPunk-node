@@ -17,8 +17,8 @@ const getData = async () => {
 
         try {
             await client.connect();
-            let resultCursor = await client.db("cPunk-prototype").collection("quotes").find().limit(1).sort({$natural:-1});
-            cPunkData = await resultCursor.toArray();
+            cPunkData = await applyMovingAverage(client);
+            await updateMovingAverage(client, cPunkData);
         } finally {
             await client.close();
         }
@@ -26,7 +26,7 @@ const getData = async () => {
 }
 
 const updateIndex = async(cPunkIndex) => {
-
+yarn 
     client = new MongoClient(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -39,6 +39,18 @@ const updateIndex = async(cPunkIndex) => {
         } finally {
             await client.close();
         }
+}
+
+const updateMovingAverage = async (client, cPunkData) => {
+    let record = { indexMA: cPunkData }
+    await client.db("cPunk-prototype").collection("quotes_MA").insertOne(record)
+}
+
+const applyMovingAverage = async (client) => {
+    let resultCursor = await client.db("cPunk-prototype").collection("quotes").find({})
+    let cPunkData = await resultCursor.toArray();
+    let maIndex = cPunkData.map(document => document.cPunkIndex.pop().y)
+    return ma.ma(maIndex, 2);
 }
 
 const getBuys = async() => {
