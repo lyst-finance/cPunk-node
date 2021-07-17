@@ -1,4 +1,3 @@
-const hre = require("hardhat");
 const ethers = require('ethers');
 const axios = require('axios')
 const cryptoPunksMarket_mainnet_ABI = require('../abis/cryptoPunksMarket_mainnet_ABI.json')

@@ -7,7 +7,7 @@ const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
 
-const wss = new WebSocket.Server({ server });
+//const wss = new WebSocket.Server({ server });
 const port = process.env.PORT || 3000
 cors = require('cors');
 app.use(cors());
