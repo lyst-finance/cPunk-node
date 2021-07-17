@@ -1,5 +1,6 @@
 const { connectionString } = require('./config.js')
 const { MongoClient } = require("mongodb");
+const ma = require('moving-averages');
 
 const uri = process.env.MONGODB_URI;
 let client;
