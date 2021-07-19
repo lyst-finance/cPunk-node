@@ -50,8 +50,14 @@ const main = async () => {
         }   
     });
 
+    setInterval(() => {
+        wss.clients.forEach((client) => {
+          client.send(new Date().toTimeString());
+        });
+      }, 1000);
+
     await punkFeed.logBought(feedManager);
-    await punkFeed.logBidEntered(feedManager)    
+    await punkFeed.logBidEntered(feedManager);    
 }
 
 main();
