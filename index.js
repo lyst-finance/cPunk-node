@@ -17,7 +17,7 @@ const wss = new Websocket.Server({ server:server });
 const main = async () => {
 
     app.use(express.json())
-    server.listen(3000, () => console.log('server has started'));  
+    server.listen(port, () => console.log('server has started'));  
     const quotesRouter = require('./src/api/quotes')
     app.use('/quote', quotesRouter)
     
