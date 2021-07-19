@@ -1,37 +1,53 @@
 const FeedManager = require('./src/subscribers/feedManager');
 const DatabaseService = require('./src/services/databaseService');
 const punkFeed = require('./src/subscribers/punk-feed');
-const WebSocket = require('ws');
 const express = require('express');
+const Websocket = require('ws');
 const app = express();
+const server = require('http').createServer(app);
 const dotenv = require('dotenv');
 dotenv.config();
 
-//const wss = new WebSocket.Server({ server });
 const port = process.env.PORT || 3000
-cors = require('cors');
-app.use(cors());
-app.use(express.json());
 
 const feedManager = new FeedManager;
 const databaseService = new DatabaseService;
+const wss = new Websocket.Server({ server:server });
 
 const main = async () => {
 
-    app.listen(port, () => console.log('server has started'));
-    
+    app.use(express.json())
+    server.listen(3000, () => console.log('server has started'));  
     const quotesRouter = require('./src/api/quotes')
     app.use('/quote', quotesRouter)
+    
+    wss.on('connection', async (ws) => {
+
+        //do this via rest API?
+        wss.clients.forEach(async (client) => {
+            let chartData = await databaseService.getHistoricalFeed();
+            client.send(JSON.stringify(chartData));  
+        });         
+      });
     
     feedManager.on("Punk_Bid_Entered", (bid, timestamp) => {
         databaseService.saveBid(bid, timestamp)
     });
     
-    feedManager.on('Punk_Bought', async (bought, timestamp) => {
+    feedManager.on('Punk_Bought', async (bought, timestamp,) => {
         await databaseService.saveBought(bought, timestamp);
+        feedManager.updateClientFeed();
         const cPunkIndex = await databaseService.runTensorflow();
         console.log('INDEX >>>', cPunkIndex);
         databaseService.saveIndex(cPunkIndex);  
+    });
+
+    feedManager.on('update_client_feed', async() => {
+        //push live feed to
+        const newFeedItem = await databaseService.getLastBuy();
+        if(newFeedItem.value != "0.0"){
+            return wss.clients.forEach(client => client.send(JSON.stringify(newFeedItem)));
+        }   
     });
 
     await punkFeed.logBought(feedManager);
@@ -39,6 +55,8 @@ const main = async () => {
 }
 
 main();
+
+module.exports = feedManager
 
 
 

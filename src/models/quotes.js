@@ -54,9 +54,4 @@ const applyMovingAverage = async (client) => {
     return ma.ma(maIndex, 2);
 }
 
-const getBuys = async() => {
-    let resultCursor = await client.db("cPunk-prototype").collection("buys").find({});
-    return  await resultCursor.toArray();
-}
-
 module.exports = { getData, updateIndex }

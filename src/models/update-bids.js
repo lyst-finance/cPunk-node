@@ -1,6 +1,4 @@
-const { connectionString } = require('./config.js');
 const { MongoClient } = require("mongodb");
-
 
 let client;
 
@@ -23,18 +21,18 @@ const updateDatabase = async (event, isBid) => {
     } else {
         try {
             await client.connect();
-            await createBoughtListing(client, event)
+            await createBoughtListing(client, event )
         } finally {
-            //await client.close();     
+            //await client.close();         
         }
-    }  
+    } 
 }
 
-const getHighestBidder = async (bought) => {
-
-    const uri = process.env.MONGODB_URI
+const getHighestBidder = async (bought ) => {
 
     console.log('\n ***** Getting Highest Bidder! ***** \n')
+
+    const uri = process.env.MONGODB_URI
 
     client = new MongoClient(uri, {
         useNewUrlParser: true,
@@ -43,18 +41,18 @@ const getHighestBidder = async (bought) => {
 
     try {
         await client.connect();
-        await createBoughtListing(client, bought);
+        await createBoughtListing(client, bought );
         await findLastBid(client, bought)           
     } finally {
-        // await client.close 
+        // await client.close();
     }
 }
 
 const getBoughtData = async () => {
 
-    const uri = process.env.MONGODB_URI
-
     let response;
+
+    const uri = process.env.MONGODB_URI
 
     client = new MongoClient(uri, {
         useNewUrlParser: true,
@@ -66,7 +64,49 @@ const getBoughtData = async () => {
         let resultCursor = await client.db("cPunk-prototype").collection("buys").find({});
         response = await resultCursor.toArray();
     } finally {
-        //await client.close();
+        await client.close();
+    }
+    return response
+}
+
+const getHistoricalFeedData = async () => {
+    let response;
+
+    const uri = process.env.MONGODB_URI
+
+    client = new MongoClient(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        });
+
+    try {
+        await client.connect();    
+        let resultCursor = await client.db("cPunk-prototype").collection("buys").find({});
+        response = await resultCursor.toArray();
+    } finally {
+        await client.close();
+    }
+    return response
+
+}
+
+const getLastBuyData = async () => {
+
+    let response;
+
+    const uri = process.env.MONGODB_URI
+
+    client = new MongoClient(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        });
+
+    try {
+        await client.connect();    
+        let resultCursor = await client.db("cPunk-prototype").collection("buys").find().limit(1).sort({$natural:-1});
+        response = await resultCursor.toArray(); 
+    } finally {
+        // await client.close();
     }
     return response
 }
@@ -93,9 +133,9 @@ const createBidListing = async (client, newListing) => {
     console.log(`New Bid listing created with id : ${result.insertedId}`)
 }
 
-const createBoughtListing = async (client, newListing) => {
+const createBoughtListing = async (client, newListing ) => {
     const result = await client.db("cPunk-prototype").collection("buys").insertOne(newListing);
-    console.log(`New Bought listing created with id : ${result.insertedId}`)
+    console.log(`New Bought listing created with id : ${result.insertedId}`);
 }
 
-module.exports = { updateDatabase, getHighestBidder, getBoughtData }
+module.exports = { updateDatabase, getHighestBidder, getBoughtData, getHistoricalFeedData, getLastBuyData }
