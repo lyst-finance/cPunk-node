@@ -54,7 +54,7 @@ class DatabaseService {
             cPunkIndex : cPunkArray
         }
         await updateIndex(cPunkIndex)
-        feedManager.updateClientHistorical();
+        //feedManager.updateClientHistorical();
     }
 
     async getHistoricalFeed(){

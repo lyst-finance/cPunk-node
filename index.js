@@ -20,7 +20,7 @@ const main = async () => {
     server.listen(port, () => console.log('server has started'));  
     const quotesRouter = require('./src/api/quotes')
     app.use('/quote', quotesRouter)
-
+    
     wss.on('connection', async (ws) => {
         ws.isAlive = true;
         ws.on('pong', () => ws.isAlive = true);
