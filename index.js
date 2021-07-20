@@ -20,15 +20,26 @@ const main = async () => {
     server.listen(port, () => console.log('server has started'));  
     const quotesRouter = require('./src/api/quotes')
     app.use('/quote', quotesRouter)
-    
-    wss.on('connection', async (ws) => {
 
+    wss.on('connection', async (ws) => {
+        ws.isAlive = true;
+        ws.on('pong', () => ws.isAlive = true);
+        
         //do this via rest API?
         wss.clients.forEach(async (client) => {
             let chartData = await databaseService.getHistoricalFeed();
             client.send(JSON.stringify(chartData));  
-        });         
+        });        
       });
+
+      const interval = setInterval(() => {
+        wss.clients.forEach((ws) => {
+          if (ws.isAlive === false) return ws.terminate();
+      
+          ws.isAlive = false;
+          ws.ping('', false, true);
+        });
+      }, 30000);
     
     feedManager.on("Punk_Bid_Entered", (bid, timestamp) => {
         databaseService.saveBid(bid, timestamp)
