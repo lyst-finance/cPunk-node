@@ -27,7 +27,7 @@ const getData = async () => {
 }
 
 const updateIndex = async(cPunkIndex) => {
-yarn 
+    
     client = new MongoClient(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
