@@ -18,8 +18,12 @@ const main = async () => {
 
     app.use(express.json())
     server.listen(port, () => console.log('server has started'));  
+    
     const quotesRouter = require('./src/api/quotes')
     app.use('/quote', quotesRouter)
+
+    const historicalRouter = require('./src/api/historical')
+    app.use('/historical', historicalRouter);
     
     wss.on('connection', async (ws) => {
         ws.isAlive = true;
