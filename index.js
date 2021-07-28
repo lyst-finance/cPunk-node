@@ -5,6 +5,7 @@ const express = require('express');
 const Websocket = require('ws');
 const app = express();
 const server = require('http').createServer(app);
+const cors = require('cors')
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -16,7 +17,9 @@ const wss = new Websocket.Server({ server:server });
 
 const main = async () => {
 
-    app.use(express.json())
+    app.use(express.json());
+    app.use(cors());
+    
     server.listen(port, () => console.log('server has started'));  
     
     const quotesRouter = require('./src/api/quotes')
